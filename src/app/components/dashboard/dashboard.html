@@ -1,0 +1,137 @@
+<div class="container-fluid">
+  <!-- Header -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+    <div class="container">
+      <span class="navbar-brand mb-0 h1">KBHR Dashboard</span>
+      <button class="btn btn-outline-light" (click)="logout()">
+        <i class="bi bi-box-arrow-right"></i> Logout
+      </button>
+    </div>
+  </nav>
+
+  <div class="container">
+    <!-- Page Title and Stats -->
+    <div class="row mb-4">
+      <div class="col">
+        <h2>Your Shortened URLs</h2>
+        <p class="text-muted" *ngIf="totalItems > 0">
+          Showing {{ (currentPage * pageSize) + 1 }} to {{ Math.min((currentPage + 1) * pageSize, totalItems) }} of {{ totalItems }} URLs
+        </p>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div class="text-center py-5" *ngIf="isLoading">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p class="mt-2">Loading URLs...</p>
+    </div>
+
+    <!-- Error Message -->
+    <div class="alert alert-danger" *ngIf="errorMessage" role="alert">
+      {{ errorMessage }}
+    </div>
+
+    <!-- URLs Table -->
+    <div class="card shadow-sm" *ngIf="!isLoading && urls.length > 0">
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead class="table-light">
+              <tr>
+                <th>Short URI</th>
+                <th>Long URL</th>
+                <th>Notes</th>
+                <th>Created</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let url of urls; trackBy: trackByUrlId">
+                <td>
+                  <code class="text-primary">{{ url.shortUri }}</code>
+                </td>
+                <td>
+                  <a [href]="url.longUrl" target="_blank" class="text-decoration-none">
+                    {{ url.longUrl.length > 50 ? url.longUrl.substring(0, 50) + '...' : url.longUrl }}
+                    <i class="bi bi-box-arrow-up-right ms-1"></i>
+                  </a>
+                </td>
+                <td>
+                  <span class="text-muted" *ngIf="url.notes; else noNotes">
+                    {{ url.notes.length > 30 ? url.notes.substring(0, 30) + '...' : url.notes }}
+                  </span>
+                  <ng-template #noNotes>
+                    <em class="text-muted">No notes</em>
+                  </ng-template>
+                </td>
+                <td class="text-nowrap">
+                  {{ formatDate(url.created) }}
+                </td>
+                <td>
+                  <button 
+                    class="btn btn-sm btn-outline-secondary me-2"
+                    (click)="copyToClipboard(url.shortUri)"
+                    title="Copy short URL">
+                    <i class="bi bi-clipboard"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div class="text-center py-5" *ngIf="!isLoading && urls.length === 0 && !errorMessage">
+      <div class="mb-3">
+        <i class="bi bi-link-45deg display-1 text-muted"></i>
+      </div>
+      <h4 class="text-muted">No URLs Found</h4>
+      <p class="text-muted">You haven't created any shortened URLs yet.</p>
+    </div>
+
+    <!-- Pagination -->
+    <nav aria-label="URL pagination" *ngIf="totalPages > 1 && !isLoading">
+      <ul class="pagination justify-content-center">
+        <!-- Previous button -->
+        <li class="page-item" [class.disabled]="!hasPrevious">
+          <button 
+            class="page-link" 
+            (click)="previousPage()"
+            [disabled]="!hasPrevious"
+            aria-label="Previous">
+            <span aria-hidden="true">&laquo;</span>
+          </button>
+        </li>
+
+        <!-- Page numbers -->
+        <li 
+          class="page-item" 
+          *ngFor="let pageNum of getPageNumbers(); trackBy: trackByIndex"
+          [class.active]="pageNum === currentPage">
+          <button 
+            class="page-link" 
+            (click)="goToPage(pageNum)"
+            [disabled]="pageNum === currentPage">
+            {{ pageNum + 1 }}
+          </button>
+        </li>
+
+        <!-- Next button -->
+        <li class="page-item" [class.disabled]="!hasNext">
+          <button 
+            class="page-link" 
+            (click)="nextPage()"
+            [disabled]="!hasNext"
+            aria-label="Next">
+            <span aria-hidden="true">&raquo;</span>
+          </button>
+        </li>
+      </ul>
+    </nav>
+
+  </div>
+</div>
