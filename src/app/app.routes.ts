@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { LoginComponent } from './components/login/login';
 import { DashboardComponent } from './components/dashboard/dashboard';
+import { UrlFormComponent } from './components/url-form/url-form';
 import { authGuard } from './guards/auth-guard';
 
 export const routes: Routes = [
@@ -12,6 +13,12 @@ export const routes: Routes = [
   
   // Dashboard route (protected by auth guard)
   { path: 'dashboard', component: DashboardComponent, canActivate: [authGuard] },
+  
+  // Create new URL route (protected)
+  { path: 'urls/new', component: UrlFormComponent, canActivate: [authGuard] },
+  
+  // Edit existing URL route (protected)
+  { path: 'urls/edit/:id', component: UrlFormComponent, canActivate: [authGuard] },
   
   // Wildcard route for 404 (redirects to login)
   { path: '**', redirectTo: '/login' }

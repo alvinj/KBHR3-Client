@@ -121,6 +121,43 @@ export class DashboardComponent implements OnInit {
     });
   }
 
+  // Navigate to create new URL page
+  createNewUrl(): void {
+    this.router.navigate(['/urls/new']);
+  }
+
+  // Navigate to edit URL page
+  editUrl(id: number): void {
+    this.router.navigate(['/urls/edit', id]);
+  }
+
+  // Delete a URL with confirmation
+  deleteUrl(url: UrlItem): void {
+    if (confirm(`Are you sure you want to delete the URL "${url.shortUri}"? This action cannot be undone.`)) {
+      this.urlService.deleteUrl(url.id).subscribe({
+        next: () => {
+          // Remove the URL from the local array
+          this.urls = this.urls.filter(u => u.id !== url.id);
+          this.totalItems--;
+          
+          // If current page is empty and not the first page, go to previous page
+          if (this.urls.length === 0 && this.currentPage > 0) {
+            this.goToPage(this.currentPage - 1);
+          } else if (this.urls.length === 0) {
+            // If first page is empty, reload to show empty state
+            this.loadUrls();
+          }
+          
+          console.log('URL deleted successfully');
+        },
+        error: (error: any) => {
+          this.errorMessage = 'Failed to delete URL. Please try again.';
+          console.error('Delete URL error:', error);
+        }
+      });
+    }
+  }
+
   // Math property for template access
   Math = Math;
 }

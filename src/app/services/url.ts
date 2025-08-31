@@ -13,6 +13,19 @@ export interface UrlItem {
   created: string;
 }
 
+// Interface for creating/updating URLs (without readonly fields)
+export interface CreateUrlRequest {
+  longUrl: string;
+  shortUri: string;
+  notes?: string;
+}
+
+// Interface for updating URLs (only editable fields)
+export interface UpdateUrlRequest {
+  longUrl: string;
+  notes?: string;
+}
+
 // Interface for paginated URL response from the API
 export interface UrlPageResponse {
   urls: UrlItem[];
@@ -68,5 +81,33 @@ export class UrlService {
   // Get URLs for a specific page (convenience method)
   getUrlsForPage(page: number, size: number = 10): Observable<UrlPageResponse> {
     return this.getUrls(page, size);
+  }
+
+  // Get a specific URL by ID
+  getUrlById(id: number): Observable<UrlItem> {
+    return this.http.get<UrlItem>(`${this.API_BASE}/urls/${id}`, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  // Create a new URL
+  createUrl(urlData: CreateUrlRequest): Observable<UrlItem> {
+    return this.http.post<UrlItem>(`${this.API_BASE}/urls`, urlData, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  // Update an existing URL by ID
+  updateUrl(id: number, urlData: UpdateUrlRequest): Observable<UrlItem> {
+    return this.http.put<UrlItem>(`${this.API_BASE}/urls/${id}`, urlData, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  // Delete a URL by ID
+  deleteUrl(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.API_BASE}/urls/${id}`, {
+      headers: this.getAuthHeaders()
+    });
   }
 }

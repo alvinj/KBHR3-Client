@@ -1,22 +1,28 @@
-<div class="container-fluid">
-  <!-- Header -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
-    <div class="container">
-      <span class="navbar-brand mb-0 h1">KBHR Dashboard</span>
-      <button class="btn btn-outline-light" (click)="logout()">
-        <i class="bi bi-box-arrow-right"></i> Logout
-      </button>
-    </div>
-  </nav>
+<!-- Header -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+  <div class="container">
+    <span class="navbar-brand mb-0 h1">KBHR Dashboard</span>
+    <button class="btn btn-outline-light" (click)="logout()">
+      <i class="bi bi-box-arrow-right"></i> Logout
+    </button>
+  </div>
+</nav>
 
+<div class="container-fluid">
   <div class="container">
     <!-- Page Title and Stats -->
     <div class="row mb-4">
-      <div class="col">
-        <h2>Your Shortened URLs</h2>
+      <div class="col-md-8">
+        <h2>Shortened URLs</h2>
         <p class="text-muted" *ngIf="totalItems > 0">
           Showing {{ (currentPage * pageSize) + 1 }} to {{ Math.min((currentPage + 1) * pageSize, totalItems) }} of {{ totalItems }} URLs
         </p>
+      </div>
+      <div class="col-md-4 text-md-end">
+        <button class="btn btn-success" (click)="createNewUrl()">
+          <i class="bi bi-plus-circle me-2"></i>
+          Create New URL
+        </button>
       </div>
     </div>
 
@@ -70,12 +76,26 @@
                   {{ formatDate(url.created) }}
                 </td>
                 <td>
-                  <button 
-                    class="btn btn-sm btn-outline-secondary me-2"
-                    (click)="copyToClipboard(url.shortUri)"
-                    title="Copy short URL">
-                    <i class="bi bi-clipboard"></i>
-                  </button>
+                  <div class="btn-group" role="group">
+                    <button 
+                      class="btn btn-sm btn-outline-secondary"
+                      (click)="copyToClipboard(url.shortUri)"
+                      title="Copy short URL">
+                      <i class="bi bi-clipboard"></i>
+                    </button>
+                    <button 
+                      class="btn btn-sm btn-outline-primary"
+                      (click)="editUrl(url.id)"
+                      title="Edit URL">
+                      <i class="bi bi-pencil"></i>
+                    </button>
+                    <button 
+                      class="btn btn-sm btn-outline-danger"
+                      (click)="deleteUrl(url)"
+                      title="Delete URL">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </div>
                 </td>
               </tr>
             </tbody>
@@ -91,6 +111,10 @@
       </div>
       <h4 class="text-muted">No URLs Found</h4>
       <p class="text-muted">You haven't created any shortened URLs yet.</p>
+      <button class="btn btn-success" (click)="createNewUrl()">
+        <i class="bi bi-plus-circle me-2"></i>
+        Create Your First URL
+      </button>
     </div>
 
     <!-- Pagination -->
