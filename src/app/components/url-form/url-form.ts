@@ -34,6 +34,7 @@ export class UrlFormComponent implements OnInit {
     });
   }
 
+
   ngOnInit(): void {
     // Check if we're in edit mode by looking for an ID in the route
     this.route.params.subscribe(params => {
@@ -62,8 +63,8 @@ export class UrlFormComponent implements OnInit {
         this.isLoading = false;
       },
       error: (error: any) => {
-        this.errorMessage = 'Failed to load URL. Please try again.';
         this.isLoading = false;
+        this.errorMessage = 'Failed to load URL. Please try again.';
         console.error('Load URL error:', error);
       }
     });
@@ -110,12 +111,14 @@ export class UrlFormComponent implements OnInit {
       },
       error: (error: any) => {
         this.isLoading = false;
+        console.error('Create URL error:', error);
+        
+        // Handle specific error cases
         if (error.status === 400) {
           this.errorMessage = 'Short URI already exists or invalid input. Please try a different short URI.';
         } else {
           this.errorMessage = 'Failed to create URL. Please try again.';
         }
-        console.error('Create URL error:', error);
       }
     });
   }

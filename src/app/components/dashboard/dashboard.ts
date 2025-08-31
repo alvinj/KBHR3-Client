@@ -32,6 +32,7 @@ export class DashboardComponent implements OnInit {
     private router: Router
   ) {}
 
+
   ngOnInit(): void {
     // Load URLs when component initializes
     this.loadUrls();
@@ -55,8 +56,8 @@ export class DashboardComponent implements OnInit {
         this.isLoading = false;
       },
       error: (error: any) => {
-        this.errorMessage = 'Failed to load URLs. Please try again.';
         this.isLoading = false;
+        this.errorMessage = 'Failed to load URLs. Please try again.';
         console.error('Load URLs error:', error);
       }
     });
