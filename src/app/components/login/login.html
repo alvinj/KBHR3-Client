@@ -21,10 +21,16 @@
             placeholder="Enter your username">
           
           <!-- Username validation messages -->
-          <div class="invalid-feedback" *ngIf="username?.invalid && username?.touched">
-            <div *ngIf="username?.errors?.['required']">Username is required</div>
-            <div *ngIf="username?.errors?.['minlength']">Username must be at least 3 characters</div>
-          </div>
+          @if (username?.invalid && username?.touched) {
+            <div class="invalid-feedback">
+              @if (username?.errors?.['required']) {
+                <div>Username is required</div>
+              }
+              @if (username?.errors?.['minlength']) {
+                <div>Username must be at least 3 characters</div>
+              }
+            </div>
+          }
         </div>
 
         <!-- Password Field -->
@@ -39,16 +45,24 @@
             placeholder="Enter your password">
           
           <!-- Password validation messages -->
-          <div class="invalid-feedback" *ngIf="password?.invalid && password?.touched">
-            <div *ngIf="password?.errors?.['required']">Password is required</div>
-            <div *ngIf="password?.errors?.['minlength']">Password must be at least 6 characters</div>
-          </div>
+          @if (password?.invalid && password?.touched) {
+            <div class="invalid-feedback">
+              @if (password?.errors?.['required']) {
+                <div>Password is required</div>
+              }
+              @if (password?.errors?.['minlength']) {
+                <div>Password must be at least 6 characters</div>
+              }
+            </div>
+          }
         </div>
 
         <!-- Error Message -->
-        <div class="alert alert-danger" *ngIf="errorMessage" role="alert">
-          {{ errorMessage }}
-        </div>
+        @if (errorMessage) {
+          <div class="alert alert-danger" role="alert">
+            {{ errorMessage }}
+          </div>
+        }
 
         <!-- Submit Button -->
         <button 
@@ -57,10 +71,11 @@
           [disabled]="loginForm.invalid || isLoading">
           
           <!-- Loading spinner -->
-          <span 
-            class="spinner-border spinner-border-sm me-2" 
-            *ngIf="isLoading"
-            aria-hidden="true"></span>
+          @if (isLoading) {
+            <span 
+              class="spinner-border spinner-border-sm me-2" 
+              aria-hidden="true"></span>
+          }
           
           {{ isLoading ? 'Signing in...' : 'Sign In' }}
         </button>

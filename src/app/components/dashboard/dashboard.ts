@@ -101,16 +101,6 @@ export class DashboardComponent implements OnInit {
     return Array.from({ length: this.totalPages }, (_, i) => i);
   }
 
-  // Track by function for ngFor performance optimization
-  trackByUrlId(index: number, url: UrlItem): number {
-    return url.id;
-  }
-
-  // Track by function for pagination
-  trackByIndex(index: number): number {
-    return index;
-  }
-
   // Copy short URI to clipboard
   copyToClipboard(shortUri: string): void {
     const fullUrl = `http://localhost:8080/${shortUri}`;

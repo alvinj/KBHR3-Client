@@ -16,32 +16,39 @@
       <div class="col-12 col-md-8 col-lg-6">
         
         <!-- Loading State -->
-        <div class="text-center py-5" *ngIf="isLoading">
-          <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Loading...</span>
+        @if (isLoading) {
+          <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2">{{ isEditMode ? 'Loading URL...' : 'Processing...' }}</p>
           </div>
-          <p class="mt-2">{{ isEditMode ? 'Loading URL...' : 'Processing...' }}</p>
-        </div>
+        }
 
         <!-- Form Card -->
-        <div class="card shadow-sm" *ngIf="!isLoading">
-          <div class="card-body p-4">
-            <h5 class="card-title mb-4">
-              <i class="bi bi-link-45deg me-2"></i>
-              {{ isEditMode ? 'Edit URL Details' : 'Create New Short URL' }}
-            </h5>
+        @if (!isLoading) {
+          <div class="card shadow-sm">
+            <div class="card-body p-4">
+              <h5 class="card-title mb-4">
+                <i class="bi bi-link-45deg me-2"></i>
+                {{ isEditMode ? 'Edit URL Details' : 'Create New Short URL' }}
+              </h5>
 
-            <!-- Success Message -->
-            <div class="alert alert-success" *ngIf="successMessage" role="alert">
-              <i class="bi bi-check-circle me-2"></i>
-              {{ successMessage }}
-            </div>
+              <!-- Success Message -->
+              @if (successMessage) {
+                <div class="alert alert-success" role="alert">
+                  <i class="bi bi-check-circle me-2"></i>
+                  {{ successMessage }}
+                </div>
+              }
 
-            <!-- Error Message -->
-            <div class="alert alert-danger" *ngIf="errorMessage" role="alert">
-              <i class="bi bi-exclamation-triangle me-2"></i>
-              {{ errorMessage }}
-            </div>
+              <!-- Error Message -->
+              @if (errorMessage) {
+                <div class="alert alert-danger" role="alert">
+                  <i class="bi bi-exclamation-triangle me-2"></i>
+                  {{ errorMessage }}
+                </div>
+              }
 
             <!-- URL Form -->
             <form [formGroup]="urlForm" (ngSubmit)="onSubmit()">
@@ -50,7 +57,9 @@
               <div class="mb-3">
                 <label for="shortUri" class="form-label">
                   Short URI <span class="text-danger">*</span>
-                  <small class="text-muted" *ngIf="isEditMode">(Cannot be changed)</small>
+                  @if (isEditMode) {
+                    <small class="text-muted">(Cannot be changed)</small>
+                  }
                 </label>
                 <div class="input-group">
                   <span class="input-group-text">localhost:8080/</span>
@@ -65,13 +74,21 @@
                 </div>
                 
                 <!-- Short URI validation messages -->
-                <div class="invalid-feedback" *ngIf="shortUri?.invalid && shortUri?.touched">
-                  <div *ngIf="shortUri?.errors?.['required']">Short URI is required</div>
-                  <div *ngIf="shortUri?.errors?.['maxlength']">Short URI cannot exceed 20 characters</div>
-                </div>
-                <div class="form-text" *ngIf="!isEditMode">
-                  Choose a unique identifier for your short URL
-                </div>
+                @if (shortUri?.invalid && shortUri?.touched) {
+                  <div class="invalid-feedback">
+                    @if (shortUri?.errors?.['required']) {
+                      <div>Short URI is required</div>
+                    }
+                    @if (shortUri?.errors?.['maxlength']) {
+                      <div>Short URI cannot exceed 20 characters</div>
+                    }
+                  </div>
+                }
+                @if (!isEditMode) {
+                  <div class="form-text">
+                    Choose a unique identifier for your short URL
+                  </div>
+                }
               </div>
 
               <!-- Long URL Field -->
@@ -88,11 +105,19 @@
                   placeholder="https://example.com/very/long/path">
                 
                 <!-- Long URL validation messages -->
-                <div class="invalid-feedback" *ngIf="longUrl?.invalid && longUrl?.touched">
-                  <div *ngIf="longUrl?.errors?.['required']">Long URL is required</div>
-                  <div *ngIf="longUrl?.errors?.['maxlength']">URL cannot exceed 255 characters</div>
-                  <div *ngIf="longUrl?.errors?.['pattern']">Please enter a valid URL starting with http:// or https://</div>
-                </div>
+                @if (longUrl?.invalid && longUrl?.touched) {
+                  <div class="invalid-feedback">
+                    @if (longUrl?.errors?.['required']) {
+                      <div>Long URL is required</div>
+                    }
+                    @if (longUrl?.errors?.['maxlength']) {
+                      <div>URL cannot exceed 255 characters</div>
+                    }
+                    @if (longUrl?.errors?.['pattern']) {
+                      <div>Please enter a valid URL starting with http:// or https://</div>
+                    }
+                  </div>
+                }
                 <div class="form-text">
                   The full URL that users will be redirected to
                 </div>
@@ -110,9 +135,13 @@
                   placeholder="Optional notes about this URL (e.g., 'Marketing campaign link')"></textarea>
                 
                 <!-- Notes validation messages -->
-                <div class="invalid-feedback" *ngIf="notes?.invalid && notes?.touched">
-                  <div *ngIf="notes?.errors?.['maxlength']">Notes cannot exceed 255 characters</div>
-                </div>
+                @if (notes?.invalid && notes?.touched) {
+                  <div class="invalid-feedback">
+                    @if (notes?.errors?.['maxlength']) {
+                      <div>Notes cannot exceed 255 characters</div>
+                    }
+                  </div>
+                }
                 <div class="form-text">
                   Add any additional information about this URL
                 </div>
@@ -126,19 +155,30 @@
                   [disabled]="urlForm.invalid || isLoading || isSubmitted">
                   
                   <!-- Loading spinner -->
-                  <span 
-                    class="spinner-border spinner-border-sm me-2" 
-                    *ngIf="isLoading"
-                    aria-hidden="true"></span>
+                  @if (isLoading) {
+                    <span 
+                      class="spinner-border spinner-border-sm me-2" 
+                      aria-hidden="true"></span>
+                  }
                   
                   <!-- Success icon -->
-                  <i class="bi bi-check-circle me-2" *ngIf="isSubmitted && !isLoading"></i>
+                  @if (isSubmitted && !isLoading) {
+                    <i class="bi bi-check-circle me-2"></i>
+                  }
                   <!-- Default icon -->
-                  <i class="bi bi-check me-2" *ngIf="!isLoading && !isSubmitted"></i>
+                  @if (!isLoading && !isSubmitted) {
+                    <i class="bi bi-check me-2"></i>
+                  }
                   
-                  <span *ngIf="isSubmitted && !isLoading">{{ isEditMode ? 'Updated!' : 'Created!' }}</span>
-                  <span *ngIf="isLoading">{{ isEditMode ? 'Updating...' : 'Creating...' }}</span>
-                  <span *ngIf="!isLoading && !isSubmitted">{{ isEditMode ? 'Update URL' : 'Create URL' }}</span>
+                  @if (isSubmitted && !isLoading) {
+                    <span>{{ isEditMode ? 'Updated!' : 'Created!' }}</span>
+                  }
+                  @if (isLoading) {
+                    <span>{{ isEditMode ? 'Updating...' : 'Creating...' }}</span>
+                  }
+                  @if (!isLoading && !isSubmitted) {
+                    <span>{{ isEditMode ? 'Update URL' : 'Create URL' }}</span>
+                  }
                 </button>
                 
                 <button 
@@ -146,16 +186,19 @@
                   class="btn btn-outline-secondary"
                   (click)="onCancel()"
                   [disabled]="isLoading">
-                  <i class="bi bi-arrow-left me-2" *ngIf="isSubmitted"></i>
-                  <i class="bi bi-x me-2" *ngIf="!isSubmitted"></i>
+                  @if (isSubmitted) {
+                    <i class="bi bi-arrow-left me-2"></i>
+                  }
+                  @if (!isSubmitted) {
+                    <i class="bi bi-x me-2"></i>
+                  }
                   {{ isSubmitted ? 'Back to Dashboard' : 'Cancel' }}
                 </button>
               </div>
               
             </form>
+            </div>
           </div>
-        </div>
-      </div>
-    </div>
+        }
   </div>
 </div>
