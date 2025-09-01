@@ -66,11 +66,13 @@ export class UrlService {
     });
   }
 
-  // Get paginated list of URLs with optional page and size parameters
-  getUrls(page: number = 0, size: number = 10): Observable<UrlPageResponse> {
+  // Get paginated list of URLs with optional page, size, and sorting parameters
+  getUrls(page: number = 0, size: number = 10, sortBy: string = 'created', sortDir: 'asc' | 'desc' = 'desc'): Observable<UrlPageResponse> {
     const params = new HttpParams()
       .set('page', page.toString())
-      .set('size', size.toString());
+      .set('size', size.toString())
+      .set('sortBy', sortBy)
+      .set('sortDir', sortDir);
     
     return this.http.get<UrlPageResponse>(`${this.API_BASE}/urls`, {
       headers: this.getAuthHeaders(),

@@ -26,6 +26,10 @@ export class DashboardComponent implements OnInit {
   hasNext = false;
   hasPrevious = false;
 
+  // Sorting properties
+  currentSortBy = 'created';
+  currentSortDir: 'asc' | 'desc' = 'desc';
+
   constructor(
     private urlService: UrlService,
     private authService: AuthService,
@@ -43,7 +47,9 @@ export class DashboardComponent implements OnInit {
     this.isLoading = true;
     this.errorMessage = '';
 
-    this.urlService.getUrls(this.currentPage, this.pageSize).subscribe({
+    console.log(`Loading URLs: page=${this.currentPage}, size=${this.pageSize}, sortBy=${this.currentSortBy}, sortDir=${this.currentSortDir}`);
+    
+    this.urlService.getUrls(this.currentPage, this.pageSize, this.currentSortBy, this.currentSortDir).subscribe({
       next: (response: UrlPageResponse) => {
         this.urls = response.urls;
         this.currentPage = response.currentPage;
@@ -99,6 +105,50 @@ export class DashboardComponent implements OnInit {
   // Generate array of page numbers for pagination
   getPageNumbers(): number[] {
     return Array.from({ length: this.totalPages }, (_, i) => i);
+  }
+
+  // Map frontend column names to backend field names
+  private getBackendFieldName(column: string): string {
+    const fieldMap: { [key: string]: string } = {
+      'short_uri': 'short_uri',
+      'long_url': 'long_url', 
+      'created': 'created'
+    };
+    return fieldMap[column] || column;
+  }
+
+  // Handle column sorting
+  sortBy(column: string): void {
+    const backendField = this.getBackendFieldName(column);
+    
+    if (this.currentSortBy === backendField) {
+      // Toggle sort direction if clicking the same column
+      this.currentSortDir = this.currentSortDir === 'asc' ? 'desc' : 'asc';
+    } else {
+      // New column, default to descending for most fields, ascending for dates
+      this.currentSortBy = backendField;
+      this.currentSortDir = column === 'created' ? 'desc' : 'asc';
+    }
+    
+    // Reset to first page when sorting
+    this.currentPage = 0;
+    this.loadUrls();
+  }
+
+  // Get sort icon for column headers
+  getSortIcon(column: string): string {
+    const backendField = this.getBackendFieldName(column);
+    
+    if (this.currentSortBy !== backendField) {
+      return 'bi-arrow-down-up'; // Neutral sort icon
+    }
+    return this.currentSortDir === 'asc' ? 'bi-sort-up' : 'bi-sort-down';
+  }
+
+  // Check if column is currently sorted
+  isSorted(column: string): boolean {
+    const backendField = this.getBackendFieldName(column);
+    return this.currentSortBy === backendField;
   }
 
   // Copy short URI to clipboard

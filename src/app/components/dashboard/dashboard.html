@@ -53,10 +53,34 @@
             <table class="table table-hover">
               <thead class="table-light">
                 <tr>
-                  <th>Short URI</th>
-                  <th>Long URL</th>
+                  <th 
+                    class="sortable-header" 
+                    [class.sorted]="isSorted('short_uri')"
+                    (click)="sortBy('short_uri')"
+                    role="button"
+                    tabindex="0">
+                    Short URI 
+                    <i [class]="'bi ' + getSortIcon('short_uri')"></i>
+                  </th>
+                  <th 
+                    class="sortable-header" 
+                    [class.sorted]="isSorted('long_url')"
+                    (click)="sortBy('long_url')"
+                    role="button"
+                    tabindex="0">
+                    Long URL 
+                    <i [class]="'bi ' + getSortIcon('long_url')"></i>
+                  </th>
                   <th>Notes</th>
-                  <th>Created</th>
+                  <th 
+                    class="sortable-header" 
+                    [class.sorted]="isSorted('created')"
+                    (click)="sortBy('created')"
+                    role="button"
+                    tabindex="0">
+                    Created 
+                    <i [class]="'bi ' + getSortIcon('created')"></i>
+                  </th>
                   <th>Actions</th>
                 </tr>
               </thead>

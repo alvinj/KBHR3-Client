@@ -1,0 +1,27 @@
+/* Sortable table headers */
+.sortable-header {
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.15s ease-in-out;
+  position: relative;
+}
+
+.sortable-header:hover {
+  background-color: rgba(0, 0, 0, 0.075) !important;
+}
+
+.sortable-header i {
+  margin-left: 0.5rem;
+  opacity: 0.6;
+  font-size: 0.8em;
+}
+
+.sortable-header.sorted i {
+  opacity: 1;
+  color: var(--bs-primary);
+}
+
+.sortable-header:focus {
+  outline: 2px solid var(--bs-primary);
+  outline-offset: -2px;
+}

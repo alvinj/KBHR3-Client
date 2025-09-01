@@ -19,7 +19,14 @@
             formControlName="username"
             [class.is-invalid]="username?.invalid && username?.touched"
             placeholder="Enter your username">
-          
+            @if (false) {
+              <span>
+                COMMENT: 
+                This line: `[class.is-invalid]="username?.invalid && username?.touched"` means:
+                adds the CSS class is-invalid only when the input’s form control is both invalid 
+                and has been touched (i.e., the user focused and then blurred it).
+              </span>
+            }
           <!-- Username validation messages -->
           @if (username?.invalid && username?.touched) {
             <div class="invalid-feedback">
