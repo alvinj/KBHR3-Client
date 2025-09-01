@@ -47,8 +47,6 @@ export class DashboardComponent implements OnInit {
     this.isLoading = true;
     this.errorMessage = '';
 
-    console.log(`Loading URLs: page=${this.currentPage}, size=${this.pageSize}, sortBy=${this.currentSortBy}, sortDir=${this.currentSortDir}`);
-    
     this.urlService.getUrls(this.currentPage, this.pageSize, this.currentSortBy, this.currentSortDir).subscribe({
       next: (response: UrlPageResponse) => {
         this.urls = response.urls;
@@ -107,11 +105,11 @@ export class DashboardComponent implements OnInit {
     return Array.from({ length: this.totalPages }, (_, i) => i);
   }
 
-  // Map frontend column names to backend field names
+  // Map frontend column names to backend field names (per server API documentation)
   private getBackendFieldName(column: string): string {
     const fieldMap: { [key: string]: string } = {
-      'short_uri': 'short_uri',
-      'long_url': 'long_url', 
+      'short_uri': 'shorturi',
+      'long_url': 'longurl', 
       'created': 'created'
     };
     return fieldMap[column] || column;
