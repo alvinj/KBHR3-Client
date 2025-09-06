@@ -1,0 +1,179 @@
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Shipping Calculator - Dependent Form Fields Demo</h3>
+                    <p class="text-muted mb-0">This form demonstrates how Angular form fields can depend on each other</p>
+                </div>
+                <div class="card-body">
+
+                    <!-- Bind form to our FormGroup and handle submit event -->
+                    <form [formGroup]="shippingForm" (ngSubmit)="onSubmit()">
+                        
+                        <!-- Item Cost Display -->
+                        <!-- Data binding: {{ }} displays component property values in template -->
+                        <div class="alert alert-info">
+                            <strong>Item Cost:</strong> ${{ itemCost }}
+                        </div>
+
+                        <!-- Country Selection -->
+                        <div class="mb-3">
+                            <label for="country" class="form-label">Destination Country *</label>
+                            <!-- formControlName links this input to the 'country' field in our FormGroup -->
+                            <!-- [class.is-invalid] conditionally adds CSS class based on validation state -->
+                            <select 
+                                id="country" 
+                                class="form-select" 
+                                formControlName="country"
+                                [class.is-invalid]="country?.invalid && country?.touched"
+                            >
+                                <option value="">Select a country</option>
+                                <!-- @for loops through countries array from component -->
+                                @for (country of countries; track country.code) {
+                                    <option [value]="country.code">
+                                        {{ country.name }} (Base rate: ${{ country.shippingRate }}/lb)
+                                    </option>
+                                }
+                            </select>
+                            <!-- @if shows validation error only when field is invalid AND user has interacted with it -->
+                            @if (country?.invalid && country?.touched) {
+                                <div class="invalid-feedback">
+                                    Please select a destination country
+                                </div>
+                            }
+                        </div>
+
+                        <!-- Weight Input -->
+                        <div class="mb-3">
+                            <label for="weight" class="form-label">Package Weight (lbs) *</label>
+                            <input 
+                                type="number" 
+                                id="weight" 
+                                class="form-control" 
+                                formControlName="weight"
+                                step="0.1"
+                                min="0.1"
+                                max="50"
+                                [class.is-invalid]="weight?.invalid && weight?.touched"
+                            >
+                            @if (weight?.invalid && weight?.touched) {
+                                <div class="invalid-feedback">
+                                    Weight must be between 0.1 and 50 lbs
+                                </div>
+                            }
+                        </div>
+
+                        <!-- Shipping Method -->
+                        <div class="mb-3">
+                            <label class="form-label">Shipping Method *</label>
+                            @for (method of shippingMethods; track method.code) {
+                                <div class="form-check">
+                                    <input 
+                                        class="form-check-input" 
+                                        type="radio" 
+                                        [id]="method.code"
+                                        formControlName="shippingMethod"
+                                        [value]="method.code"
+                                    >
+                                    <label class="form-check-label" [for]="method.code">
+                                        {{ method.name }} ({{ method.multiplier }}x rate)
+                                    </label>
+                                </div>
+                            }
+                        </div>
+
+                        <!-- Insurance Option -->
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input 
+                                    class="form-check-input" 
+                                    type="checkbox" 
+                                    id="insurance"
+                                    formControlName="insurance"
+                                >
+                                <label class="form-check-label" for="insurance">
+                                    Add insurance (2% of item value: ${{ (itemCost * 0.02).toFixed(2) }})
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Tracking Number (Auto-generated for non-standard shipping) -->
+                        <div class="mb-3">
+                            <label for="trackingNumber" class="form-label">Tracking Number</label>
+                            <input 
+                                type="text" 
+                                id="trackingNumber" 
+                                class="form-control" 
+                                formControlName="trackingNumber"
+                                [readonly]="shippingMethod?.value === 'standard'"
+                            >
+                            <div class="form-text">
+                                @if (shippingMethod?.value === 'standard') {
+                                    <span class="text-muted">
+                                        Tracking not available for standard shipping
+                                    </span>
+                                } @else {
+                                    <span class="text-info">
+                                        Tracking number auto-generated for express/overnight shipping
+                                    </span>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- Cost Breakdown - shows calculated results from component methods -->
+                        <!-- This section only appears when calculatedShipping > 0 -->
+                        @if (calculatedShipping > 0) {
+                            <div class="alert alert-success">
+                                <h5>Cost Breakdown:</h5>
+                                <ul class="mb-2">
+                                    <li>Item Cost: ${{ itemCost }}</li>
+                                    <!-- These values update automatically when form changes trigger calculateShipping() -->
+                                    <li>Shipping Cost: ${{ calculatedShipping }}</li>
+                                    @if (insurance?.value) {
+                                        <li>Insurance: ${{ (itemCost * 0.02).toFixed(2) }}</li>
+                                    }
+                                </ul>
+                                <strong>Total: ${{ totalCost }}</strong>
+                            </div>
+                        }
+
+                        <!-- Form Actions -->
+                        <div class="d-flex gap-2">
+                            <button 
+                                type="submit" 
+                                class="btn btn-primary"
+                                [disabled]="shippingForm.invalid"
+                            >
+                                Calculate & Submit
+                            </button>
+                            <button 
+                                type="button" 
+                                class="btn btn-secondary"
+                                (click)="resetForm()"
+                            >
+                                Reset Form
+                            </button>
+                        </div>
+
+                    </form>
+
+                    <!-- Debug Information -->
+                    <div class="mt-4">
+                        <details>
+                            <summary class="text-muted">Debug: Form State (for learning)</summary>
+                            <div class="mt-2">
+                                <strong>Form Valid:</strong> {{ shippingForm.valid }}<br>
+                                <strong>Form Value:</strong>
+                                <pre class="bg-light p-2 mt-1">{{ shippingForm.value | json }}</pre>
+                                <strong>Form Status:</strong>
+                                <pre class="bg-light p-2 mt-1">{{ shippingForm.status }}</pre>
+                            </div>
+                        </details>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
