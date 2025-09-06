@@ -1,0 +1,51 @@
+<!-- Component composition: using multiple components together -->
+
+<!-- 1. Header Component: Receives data via @Input() properties -->
+<app-page-header 
+    [title]="pageTitle" 
+    [subtitle]="pageSubtitle">
+</app-page-header>
+
+<div class="container">
+    
+    <!-- Section 1: User Cards -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <h2 class="mb-3">User Management</h2>
+            <p class="text-muted">Each card is a separate component that can communicate with this parent component.</p>
+        </div>
+        
+        <!-- 2. User Card Components: Loop creates multiple instances -->
+        <!-- Each card receives user data via [user] and sends events via (viewProfile) and (deleteUser) -->
+        @for (user of users; track user.id) {
+            <div class="col-md-6 col-lg-4 mb-3">
+                <app-user-card 
+                    [user]="user" 
+                    (viewProfile)="handleViewProfile($event)"
+                    (deleteUser)="handleDeleteUser($event)">
+                </app-user-card>
+            </div>
+        }
+        
+        @if (users.length === 0) {
+            <div class="col-12">
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i> All users have been deleted! Refresh to restore them.
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Section 2: Learning Form -->
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-3">Shipping Calculator</h2>
+            <p class="text-muted">This is the same learning form component we created earlier, reused here!</p>
+        </div>
+        <div class="col-12">
+            <!-- 3. Learning Form Component: Complete reuse of our existing component -->
+            <app-learning-form></app-learning-form>
+        </div>
+    </div>
+
+</div>
